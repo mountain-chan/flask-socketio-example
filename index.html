@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <title>Flask SocketIO</title>
+</head>
+<body>
+<script type="text/javascript">
+$(document).ready(function() {
+
+	var socket = io.connect('http://127.0.0.1:5000');
+	var socket_message2 = io('http://127.0.0.1:5000/message2');
+	var current_room = 'sd';
+
+
+	$('#connect').on('click', function() {
+	    socket.emit('login', $('#username').val());
+	    socket.emit('join', {'username': $('#username').val(), 'room': current_room});
+		socket.emit('message', $('#username').val()+' has connected');
+	});
+
+	$('#connect2').on('click', function() {
+		socket_message2.emit('join2', {'username': $('#username').val(), 'room': 'msg2'});
+		socket_message2.emit('message2', $('#username').val()+' has connected message2');
+	});
+
+	$('#disconnect').on('click', function() {
+		socket.disconnect();
+		console.log('click on disconnect');
+	});
+
+
+
+
+	socket.on('message', function(msg) {
+		$("#connect_messages").append('<li>'+msg+'</li>');
+	});
+
+	socket_message2.on('message2', function(msg) {
+		$("#connect_messages").append('<li>'+msg+'</li>');
+	});
+
+	socket.on('new_private_msg', function(msg) {
+		$("#private_messages").append('<li>'+msg+'</li>');
+	});
+
+	socket.on('new_group_msg', function(msg) {
+		$("#group_messages").append('<li>'+msg+'</li>');
+	});
+
+
+
+
+	$('#sendPrivate').on('click', function() {
+		socket.emit('chat_private', {'username': $('#receiver').val(), 'message': $('#private_message').val()});
+		$('#private_message').val('');
+	});
+
+	$('#sendGroup').on('click', function() {
+		socket.emit('chat_group', {'username': $('#username').val(), 'room': current_room, 'message': $('#group_message').val()});
+		$('#group_message').val('');
+	});
+
+
+
+
+
+	$('#sd').on('click', function() {
+		if(current_room == 'sd'){
+		    alert('You are already in this room!');
+		}
+		else{
+		    socket.emit('leave', {'username': $('#username').val(), 'room': current_room});
+		    current_room = 'sd';
+		    socket.emit('join', {'username': $('#username').val(), 'room': current_room});
+		}
+	});
+
+	$('#test').on('click', function() {
+		if(current_room == 'test'){
+		    alert('You are already in this room!');
+		}
+		else{
+		    socket.emit('leave', {'username': $('#username').val(), 'room': current_room});
+		    current_room = 'test';
+		    socket.emit('join', {'username': $('#username').val(), 'room': current_room});
+		}
+	});
+
+	$('#ai').on('click', function() {
+		if(current_room == 'ai'){
+		    alert('You are already in this room!');
+		}
+		else{
+		    socket.emit('leave', {'username': $('#username').val(), 'room': current_room});
+		    current_room = 'ai';
+		    socket.emit('join', {'username': $('#username').val(), 'room': current_room});
+		}
+	});
+
+
+});
+</script>
+
+
+Username:
+<input type="text" id="username">
+<button id="connect">Connect</button>
+<button id="connect2">Connect2</button>
+
+<br/>
+<br/>
+
+<ul id="connect_messages"></ul>
+
+
+<h2>Private Chat</h2>
+<ul id="private_messages"></ul>
+Receiver:
+<input type="text" id="receiver">
+<input type="text" id="private_message">
+<button id="sendPrivate">Send</button>
+
+<br/>
+<br/>
+
+<h2>Group Chat</h2>
+<button id="sd">SD</button>&nbsp;
+<button id="test">TEST</button>&nbsp;
+<button id="ai">AI</button>
+<br/>
+<br/>
+<ul id="group_messages"></ul>
+<input type="text" id="group_message">
+<button id="sendGroup">Send</button>
+<br/>
+<br/>
+<br/>
+<br/>
+
+<button id="disconnect">Disconnect</button>
+
+</body>
+</html>
