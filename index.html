@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <title>Flask SocketIO</title>
 </head>
@@ -10,22 +10,27 @@
 <script type="text/javascript">
 $(document).ready(function() {
 
+    var current_room = 'sd';
 	var socket = io.connect('http://127.0.0.1:5000');
+
+<!--	tất cả event trên namespace này sẽ kết nối và được handle bởi  socket_message2-->
 	var socket_message2 = io('http://127.0.0.1:5000/message2');
-	var current_room = 'sd';
 
 
+<!--Click button Connect will emit event login, join room and message-->
 	$('#connect').on('click', function() {
 	    socket.emit('login', $('#username').val());
 	    socket.emit('join', {'username': $('#username').val(), 'room': current_room});
 		socket.emit('message', $('#username').val()+' has connected');
 	});
 
+<!--Click button Connect2 will emit event join2 and message2-->
 	$('#connect2').on('click', function() {
 		socket_message2.emit('join2', {'username': $('#username').val(), 'room': 'msg2'});
 		socket_message2.emit('message2', $('#username').val()+' has connected message2');
 	});
 
+<!--Disconnect socket-->
 	$('#disconnect').on('click', function() {
 		socket.disconnect();
 		console.log('click on disconnect');
@@ -33,30 +38,39 @@ $(document).ready(function() {
 
 
 
-
+<!--Listen event send from socket with default namespace-->
 	socket.on('message', function(msg) {
 		$("#connect_messages").append('<li>'+msg+'</li>');
 	});
 
+
+<!--socket_message2 Listen-->
 	socket_message2.on('message2', function(msg) {
 		$("#connect_messages").append('<li>'+msg+'</li>');
 	});
 
+
+<!--Listen message private-->
 	socket.on('new_private_msg', function(msg) {
 		$("#private_messages").append('<li>'+msg+'</li>');
 	});
 
+<!--Listen message private-->
 	socket.on('new_group_msg', function(msg) {
 		$("#group_messages").append('<li>'+msg+'</li>');
 	});
 
 
 
+<!--Emit message private-->
 
 	$('#sendPrivate').on('click', function() {
 		socket.emit('chat_private', {'username': $('#receiver').val(), 'message': $('#private_message').val()});
 		$('#private_message').val('');
 	});
+
+
+<!--Emit message group-->
 
 	$('#sendGroup').on('click', function() {
 		socket.emit('chat_group', {'username': $('#username').val(), 'room': current_room, 'message': $('#group_message').val()});
@@ -66,6 +80,7 @@ $(document).ready(function() {
 
 
 
+<!--    Choose room-->
 
 	$('#sd').on('click', function() {
 		if(current_room == 'sd'){
