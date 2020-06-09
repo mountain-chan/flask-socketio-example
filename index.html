@@ -12,22 +12,26 @@ $(document).ready(function() {
 
     var current_room = 'sd';
 	var socket = io.connect('http://127.0.0.1:5000');
-
-<!--	all event on this namespace will be connected and handled by  socket_message2-->
+    <!--all event on this namespace will be connected and handled by  socket_message2-->
 	var socket_message2 = io('http://127.0.0.1:5000/message2');
+
 
 
 <!--Click button Connect will emit event login, join room and message-->
 	$('#connect').on('click', function() {
 	    socket.emit('login', $('#username').val());
-	    socket.emit('join', {'username': $('#username').val(), 'room': current_room});
+
 		socket.emit('message', $('#username').val()+' has connected');
+
+		socket.emit('join', {'username': $('#username').val(), 'room': current_room});
 	});
 
-<!--Click button Connect2 will emit event join2 and message2-->
+
+<!--Click button Connect2 will emit event join2 and message in namespace socket_message2-->
 	$('#connect2').on('click', function() {
-		socket_message2.emit('join2', {'username': $('#username').val(), 'room': 'msg2'});
-		socket_message2.emit('message2', $('#username').val()+' has connected message2');
+
+        socket_message2.emit('join2', {'username': $('#username').val(), 'room': 'AI'});
+		socket_message2.emit('message', $('#username').val()+' has connected socket_message2');
 	});
 
 <!--Disconnect socket-->
@@ -38,14 +42,26 @@ $(document).ready(function() {
 
 
 
-<!--Listen event send from socket with default namespace-->
+<!--Listen event message from socket with default namespace-->
 	socket.on('message', function(msg) {
 		$("#connect_messages").append('<li>'+msg+'</li>');
 	});
 
 
-<!--socket_message2 Listen-->
-	socket_message2.on('message2', function(msg) {
+<!--Listen event msg_room from socket with default namespace-->
+	socket.on('msg_room', function(msg) {
+		$("#group_messages").append('<li>'+msg+'</li>');
+	});
+
+
+<!--Listen event msg_room from socket with namespace message2-->
+	socket_message2.on('msg_room', function(msg) {
+		$("#group_messages").append('<li>'+msg+'</li>');
+	});
+
+
+<!--socket_message2 Listen event message-->
+	socket_message2.on('message', function(msg) {
 		$("#connect_messages").append('<li>'+msg+'</li>');
 	});
 

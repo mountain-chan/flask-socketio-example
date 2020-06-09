@@ -15,6 +15,12 @@ def test_connect():
     print('[CONNECTED] ' + request.sid)
 
 
+# The connection event handler can return False to reject the connection, or it can also raise ConectionRefusedError
+@socketio.on('connect', namespace='/message2')
+def test_connect():
+    print('[CONNECTED MESSAGE2] ' + request.sid)
+
+
 # Disconnect event when client run socket.disconnect();
 @socketio.on('disconnect')
 def test_disconnect():
@@ -60,7 +66,7 @@ def on_join(data):
     username = data['username']
     room = data['room']
     join_room(room)
-    send(username + ' has entered the room.', room=room)
+    emit('msg_room', username + ' has entered the room.' + room.upper(), room=room)
 
 
 # Default namespace is '/', connect io.connect('http://127.0.0.1:5000')
@@ -70,7 +76,7 @@ def on_join(data):
     username = data['username']
     room = data['room']
     join_room(room)
-    send(username + ' has entered the room.', room=room)
+    emit('msg_room', username + ' has entered the room.' + room.upper(), room=room)
 
 
 @socketio.on('leave')
@@ -78,12 +84,12 @@ def on_leave(data):
     username = data['username']
     room = data['room']
     leave_room(room)
-    send(username + ' has left the room.', room=room)
+    emit('msg_room', username + ' has left the room ' + room.upper(), room=room)
 
 
-@socketio.on('message2', namespace='/message2')
+@socketio.on('message', namespace='/message2')
 def on_message2(msg):
-    emit('message2', msg, room='msg2')
+    send(msg, room='AI')
 
 
 if __name__ == '__main__':
