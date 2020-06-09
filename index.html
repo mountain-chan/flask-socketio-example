@@ -13,7 +13,7 @@ $(document).ready(function() {
     var current_room = 'sd';
 	var socket = io.connect('http://127.0.0.1:5000');
 
-<!--	tất cả event trên namespace này sẽ kết nối và được handle bởi  socket_message2-->
+<!--	all event on this namespace will be connected and handled by  socket_message2-->
 	var socket_message2 = io('http://127.0.0.1:5000/message2');
 
 

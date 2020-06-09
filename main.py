@@ -63,7 +63,8 @@ def on_join(data):
     send(username + ' has entered the room.', room=room)
 
 
-# room=room all clients join this room will receive it
+# Default namespace is '/', connect io.connect('http://127.0.0.1:5000')
+# a name space have many rooms, connect io('http://127.0.0.1:5000/message2');
 @socketio.on('join2', namespace='/message2')
 def on_join(data):
     username = data['username']
