@@ -69,16 +69,6 @@ def on_join(data):
     emit('msg_room', username + ' has entered the room.' + room.upper(), room=room)
 
 
-# Default namespace is '/', connect io.connect('http://127.0.0.1:5000')
-# a name space have many rooms, connect io('http://127.0.0.1:5000/message2');
-@socketio.on('join2', namespace='/message2')
-def on_join(data):
-    username = data['username']
-    room = data['room']
-    join_room(room)
-    emit('msg_room', username + ' has entered the room.' + room.upper(), room=room)
-
-
 @socketio.on('leave')
 def on_leave(data):
     username = data['username']
@@ -87,9 +77,19 @@ def on_leave(data):
     emit('msg_room', username + ' has left the room ' + room.upper(), room=room)
 
 
+# Default namespace is '/', connect io.connect('http://127.0.0.1:5000')
+# a name space have many rooms, connect io('http://127.0.0.1:5000/message2');
+@socketio.on('join2', namespace='/message2')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    emit('msg_room', username + ' has entered the room.' + room.upper(), room=room, namespace='/message2')
+
+
 @socketio.on('message', namespace='/message2')
 def on_message2(msg):
-    send(msg, room='AI')
+    send(msg, room='AI', namespace='/message2')
 
 
 if __name__ == '__main__':
